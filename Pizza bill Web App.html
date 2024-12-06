@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pizza Bill Generator</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .pizza-section {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        select, input[type="checkbox"] {
+            margin-bottom: 10px;
+        }
+        #billDetails {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🍕 Pizza Bill Generator</h1>
+
+    <div class="pizza-section">
+        <h3>Select Pizza Type</h3>
+        <label>
+            <input type="radio" name="pizzaType" value="veg" checked> Vegetarian
+        </label>
+        <label>
+            <input type="radio" name="pizzaType" value="nonveg"> Non-Vegetarian
+        </label>
+    </div>
+
+    <div class="pizza-section">
+        <h3>Select Pizza Size</h3>
+        <select id="pizzaSize">
+            <option value="small">Small (₹150)</option>
+            <option value="medium">Medium (₹250)</option>
+            <option value="large">Large (₹350)</option>
+        </select>
+    </div>
+
+    <div class="pizza-section">
+        <h3>Add Toppings</h3>
+        <label>
+            <input type="checkbox" id="extraCheese"> Extra Cheese (+₹50)
+        </label>
+        <label>
+            <input type="checkbox" id="veggieTopping"> Veggie Topping (+₹60)
+        </label>
+        <label>
+            <input type="checkbox" id="takeaway"> Takeaway (+₹20)
+        </label>
+    </div>
+
+    <button onclick="calculateBill()">Generate Bill</button>
+
+    <div id="billDetails" style="display:none; margin-top: 20px;">
+        <h3>Bill Details</h3>
+        <p id="pizzaTypeDisplay"></p>
+        <p id="pizzaSizeDisplay"></p>
+        <p id="toppingsDisplay"></p>
+        <p id="totalBillDisplay"></p>
+    </div>
+</div>
+
+<script>
+    // Pricing Constants
+    const PIZZA_PRICES = {
+        'small': 150,
+        'medium': 250,
+        'large': 350
+    };
+
+    const EXTRA_TOPPINGS = {
+        'extraCheese': 50,
+        'veggieTopping': 60,
+        'takeaway': 20
+    };
+
+    function calculateBill() {
+        // Get pizza type
+        const pizzaType = document.querySelector('input[name="pizzaType"]:checked').value;
+
+        // Get pizza size
+        const pizzaSize = document.getElementById('pizzaSize').value;
+
+        // Initialize total bill
+        let totalBill = PIZZA_PRICES[pizzaSize];
+
+        // Track added toppings
+        let addedToppings = [];
+
+        // Check toppings
+        Object.keys(EXTRA_TOPPINGS).forEach(topping => {
+            const toppingElement = document.getElementById(topping);
+            if (toppingElement.checked) {
+                totalBill += EXTRA_TOPPINGS[topping];
+                addedToppings.push(
+                    `${topping.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())} (+₹${EXTRA_TOPPINGS[topping]})`
+                );
+            }
+        });
+
+        // Display bill details
+        const billDetailsDiv = document.getElementById('billDetails');
+        billDetailsDiv.style.display = 'block';
+
+        document.getElementById('pizzaTypeDisplay').textContent =
+            `Pizza Type: ${pizzaType === 'veg' ? 'Vegetarian' : 'Non-Vegetarian'}`;
+
+        document.getElementById('pizzaSizeDisplay').textContent =
+            `Pizza Size: ${pizzaSize.charAt(0).toUpperCase() + pizzaSize.slice(1)} (₹${PIZZA_PRICES[pizzaSize]})`;
+
+        document.getElementById('toppingsDisplay').textContent =
+            addedToppings.length > 0
+                ? `Toppings: ${addedToppings.join(', ')}`
+                : 'No additional toppings';
+
+        document.getElementById('totalBillDisplay').innerHTML =
+            `<strong>Total Bill: ₹${totalBill}</strong>`;
+    }
+</script>
+</body>
+</html>
